@@ -1,3 +1,23 @@
 # DOBBY
-## DOBBY IS A FREE ELF!
-Dobby is a discord robot. He has no Master!
+Dobby is a discord bot written in python using [discord.py](https://github.com/Rapptz/discord.py).
+
+### DOBBY IS A FREE ELF!
+Dobby has no Master but he will do what you ask him. At least, 95% of the time.
+To do so, you only have to summon him.
+Dobby may be summoned by metioning him or by adding a '.' before the desired command.
+
+## FEATURES AND COMMANDS
+#### MusicBot
+Dobby can play music for you if you ask him gently.
+**Commands**
+- play (song) -> Dobby will search and play (or add to queue) the first match on youtube for the given input.
+- stop -> Dobby will stop playing the current song.
+- resume -> Dobby will resume playing a previously stopped song.
+- skip -> Dobby will skip the current song
+
+#### Random Stuff
+Dobby can be ordered to do some random stuff too.
+If you feel sad, you can always tell him to inspire you...
+**Commands**
+- inspire -> Dobby will try to inspire you with a shitty [zenquote](https://zenquotes.io)
+- ping -> Check if Dobby has good internet connection

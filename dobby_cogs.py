@@ -144,6 +144,7 @@ class MusicCog(commands.Cog):
     async def skip(self, ctx:commands.Context):
         if self.vc.is_playing:
             self.vc.stop()
+            self.play_song()
             await ctx.channel.send('Skipping current song!')
         else:
             await ctx.channel.send('Dobby can not skip a song if he\'s not playing any...')
