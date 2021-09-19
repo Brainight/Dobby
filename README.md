@@ -7,17 +7,19 @@ To do so, you only have to summon him.
 Dobby may be summoned by metioning him or by adding a '.' before the desired command.
 
 ## FEATURES AND COMMANDS
-#### MusicBot
+### MusicBot
 Dobby can play music for you if you ask him gently.
-**Commands**
+
+**Commands:**
 - play (song) -> Dobby will search and play (or add to queue) the first match on youtube for the given input.
 - stop -> Dobby will stop playing the current song.
 - resume -> Dobby will resume playing a previously stopped song.
 - skip -> Dobby will skip the current song
 
-#### Random Stuff
+### Random Stuff
 Dobby can be ordered to do some random stuff too.
 If you feel sad, you can always tell him to inspire you...
-**Commands**
+
+**Commands:**
 - inspire -> Dobby will try to inspire you with a shitty [zenquote](https://zenquotes.io)
 - ping -> Check if Dobby has good internet connection
