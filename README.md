@@ -2,9 +2,16 @@
 Dobby is a discord bot written in python using [discord.py](https://github.com/Rapptz/discord.py).
 
 ### DOBBY IS A FREE ELF!
-Dobby has no Master but he will do what you ask him. At least, 95% of the time.
+Dobby has no Master but he will do what you ask him. At least 95% of the time.
 To do so, you only have to summon him.
-Dobby may be summoned by metioning him or by adding a '.' before the desired command.
+Dobby may be summoned by mentioning him or by adding a '.' before the desired command.
+
+### REQUIEREMENTS
+In order for Dobby to work, you'll need to have the modules written in Pipfile installed.
+
+Music Features will only work if you have the ffmpeg package installed in the server where Dobby is being executed.
+In Linux:
+> sudo apt install ffmpeg
 
 ## FEATURES AND COMMANDS
 ### MusicBot
