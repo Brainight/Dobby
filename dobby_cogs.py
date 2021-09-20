@@ -1,5 +1,6 @@
+import asyncio
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import requests
 import json
 from youtube_dl import YoutubeDL
@@ -39,6 +40,8 @@ class MusicCog(commands.Cog):
         # Music Bot Stuff
         self.queue = []
         self.is_playing = False
+        # This is only used to write to the last channel that told Dobby to play a song. It is used for Dobby to say good bye after no more songs are in queue.
+        self.channel = None
         # Voiceclient (not voice channel)
         self.vc = None
         
@@ -117,14 +120,15 @@ class MusicCog(commands.Cog):
         else:
             await ctx.channel.send('Dobby can not play the song for Master. Dobby is very sorry.')
 
-
+            
     # Plays a song 
     def play_song(self):
         """
         Plays the next song in queue. If there's no song in queue, it sets self.is_playing property to "False"
         """
         if len(self.queue) > 0: 
-            self.is_playing = True
+            self.is_playing = True 
+            self.dismiss_dobby.start()
             song = self.queue.pop(0)
             print("Playing song: ", song['src'])
             self.vc.play(discord.FFmpegPCMAudio(song['src'], **self.ffmpeg_options), after= lambda e: self.play_song())
@@ -137,7 +141,9 @@ class MusicCog(commands.Cog):
     @commands.command()
     async def play(self, ctx:commands.Context, *song):
         if await self.handle_play_request(ctx):
-            await self._prepare_song(ctx, song)       
+            self.channel = ctx.channel
+            await self._prepare_song(ctx, song)
+
 
     
     @commands.command()
@@ -181,6 +187,24 @@ class MusicCog(commands.Cog):
     async def playList(self, ctx:commands, *args):
         for i, arg in enumerate(args):
             continue
+
+
+# ------------------------   TASKS   -------------------------- 
+
+    # Makes Dobby to wait for 2 minutes, if he is not playing after two  minutes, he will disconnect from channel
+    @tasks.loop(minutes=2)
+    async def dismiss_dobby(self):
+        """
+        After the first time Dobby recieves a play command, he will start this loop to check if he is still playing a song every 2 minutes.
+        If he realized he is not playing a song anymore, he will leave the Voice channel and say goodbye in the channel where last play command was executed.
+        Once he leaves the channel, the loop will stop. If you summon him again to play, this loop will start again.
+        """
+        if not self.is_playing:
+            await self.channel.send('Dobby seems not to be useful anymore... Dobby is living  voice channel now...')
+            self.dismiss_dobby.stop()
+            await self.vc.disconnect()
+        
+
 
 def set_up_cogs(bot:commands.bot.Bot):
     bot.add_cog(RandomCog(bot))

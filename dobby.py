@@ -28,8 +28,8 @@ class Dobby(commands.Bot):
 
     # ------------------  EVENTS  -----------------------
     async def on_ready(self):
-        print('We have logged in as {0.user}'.format(bot))
-
+        print('We have logged in as {0.user}'.format(bot)) 
+          
     # Processing messages
     async def on_message(self, msg:discord.Message):
         if msg.author == self.user:
