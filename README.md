@@ -6,7 +6,7 @@ Dobby has no Master but he will do what you ask him. At least 95% of the time.
 To do so, you only have to summon him.
 Dobby may be summoned by mentioning him or by adding a '.' before the desired command.
 
-### REQUIEREMENTS
+## REQUIEREMENTS
 In order for Dobby to work, you'll need to have the modules written in Pipfile installed.
 
 Music Features will only work if you have the ffmpeg package installed in the server where Dobby is being executed.
