@@ -195,6 +195,8 @@ class MusicCog(commands.Cog):
             self.dismiss_dobby.cancel()  # Ending dissmis_dobby loop
             await ctx.channel.send('Dobby is free!!')
             await self.vc.disconnect()  # Disconnecting voice client
+        else:
+            await ctx.channel.send('I\'m already free, \'Master\'....'
             
     # ------- PLAYLIST STUFF
 

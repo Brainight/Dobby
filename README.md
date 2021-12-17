@@ -18,10 +18,11 @@ In Ubuntu 20.04:
 Dobby can play music for you if you ask him gently.
 
 **Commands:**
-- play (song) -> Dobby will search and play (or add to queue) the first match on youtube for the given input.
+- play <song> -> Dobby will search and play (or add to queue) the first match on youtube for the given input.
 - stop -> Dobby will stop playing the current song.
 - resume -> Dobby will resume playing a previously stopped song.
 - skip -> Dobby will skip the current song
+- giveSock -> Dobby will stop playing music and leave the voice channel.
 
 ### Random Stuff
 Dobby can be ordered to do some random stuff too.
