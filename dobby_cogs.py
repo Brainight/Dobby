@@ -196,7 +196,7 @@ class MusicCog(commands.Cog):
             await ctx.channel.send('Dobby is free!!')
             await self.vc.disconnect()  # Disconnecting voice client
         else:
-            await ctx.channel.send('I\'m already free, \'Master\'....'
+            await ctx.channel.send('I\'m already free, \'Master\'....')
             
     # ------- PLAYLIST STUFF
 
