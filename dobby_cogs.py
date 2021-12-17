@@ -188,14 +188,15 @@ class MusicCog(commands.Cog):
             
     @commands.command(description='Sets Dobby free from the voice channel.')
     async def giveSock(self, ctx:commands.Context):
-        if self.vc.is_connected():
-            if self.vc.is_playing():  # Stop music if on
-                self.vc.stop()
-            self.queue = None
-            self.dismiss_dobby.cancel()  # Ending dissmis_dobby loop
-            await ctx.channel.send('Dobby is free!!')
-            await self.vc.disconnect()  # Disconnecting voice client
-        else:
+        try:
+            if self.vc.is_connected():
+                if self.vc.is_playing():  # Stop music if on
+                    self.vc.stop()
+                self.queue = None
+                self.dismiss_dobby.cancel()  # Ending dissmis_dobby loop
+                await ctx.channel.send('Dobby is free!!')
+                await self.vc.disconnect()  # Disconnecting voice client
+        except AttributeError:
             await ctx.channel.send('I\'m already free, \'Master\'....')
             
     # ------- PLAYLIST STUFF
