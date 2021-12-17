@@ -5,6 +5,8 @@ from discord.ext import commands
 import dobby_utils
 import dobby_cogs
 
+DOBBY_COMMAND_PREFIX = '.'
+
 class Dobby(commands.Bot):
 
     def __init__(self, cmd_prefix):
@@ -34,8 +36,9 @@ class Dobby(commands.Bot):
     async def on_message(self, msg:discord.Message):
         if msg.author == self.user:
             return
-        elif msg.content.startswith('.') or self.user in msg.mentions:
-                await self.process_commands(msg)
+        elif msg.content.startswith(DOBBY_COMMAND_PREFIX) or self.user in msg.mentions:
+            print(msg.content)
+            await self.process_commands(msg)
         else:
             dobby_utils.process_msg(msg.content)
     

@@ -7,7 +7,7 @@ from youtube_dl import YoutubeDL
 
 class RandomCog(commands.Cog, name='Random wishes'):
     
-    def __init__(self, bot:discord.ext.commands.bot):
+    def __init__(self, bot:commands.bot):
         self.bot = bot
 
     # -------- QUOTES
@@ -19,11 +19,6 @@ class RandomCog(commands.Cog, name='Random wishes'):
         text = '"' + json_data['q'] + '"'  + '\n     -------- ' + json_data['a'] + ' --------'
         await ctx.channel.send(text)
 
-    # ------- GIVE CLOTH
-    @commands.command(aliases=['darcalcetin', 'setFree'])
-    async def giveSock(self, ctx:commands.Context):
-        text = "Master has given Dobby a sock...\nDobby is free!"
-        await ctx.channel.send(text)
 
     # ------- RANDOM THINGS
     # Get bot latency (.ping / .latency)
@@ -44,6 +39,9 @@ class MusicCog(commands.Cog):
         self.channel = None
         # Voiceclient (not voice channel)
         self.vc = None
+        
+        # Task loop 
+        self.task_start = False;
         
         # YoutubeDL stuff
         self.YDL_options = {'format' : 'bestaudio', 'nonplaylist' : 'True' }
@@ -76,6 +74,8 @@ class MusicCog(commands.Cog):
             # Connect dobby to channel and save VoiceClient in self.vc
                 self.vc = await voice_channel.connect()
                 await ctx.channel.send('Dobby joined \'{0}\' channel...'.format(voice_channel.name))
+                self.task_start = True;
+                self.dismiss_dobby.start()
                 return True
 
             # If different channel asks Dobby to play, but he is playing on another channel with people listening. Dobby stays in current channel.
@@ -109,6 +109,9 @@ class MusicCog(commands.Cog):
         
         # If data for the supplied is retrieved succesfully (else -> song_data = False)
         if song_data:
+            if self.queue is None:
+                self.queue = []
+                
             self.queue.append(song_data)
 
             if len(self.queue) > 1 or self.is_playing:
@@ -119,6 +122,7 @@ class MusicCog(commands.Cog):
 
         else:
             await ctx.channel.send('Dobby can not play the song for Master. Dobby is very sorry.')
+            self.is_playing = False
 
             
     # Plays a song 
@@ -126,15 +130,15 @@ class MusicCog(commands.Cog):
         """
         Plays the next song in queue. If there's no song in queue, it sets self.is_playing property to "False"
         """
+        if self.queue is None: self.queue = []
+        
         if len(self.queue) > 0: 
             self.is_playing = True 
-            self.dismiss_dobby.start()
             song = self.queue.pop(0)
             print("Playing song: ", song['src'])
-            self.vc.play(discord.FFmpegPCMAudio(song['src'], **self.ffmpeg_options), after= lambda e: self.play_song())
+            self.vc.play(discord.FFmpegPCMAudio(song['src'], **self.ffmpeg_options), after=lambda e: self.play_song()) 
         else:
             self.is_playing = False
-
     
     
     # ---------------------------    COMMANDS   ---------------------------------
@@ -145,12 +149,10 @@ class MusicCog(commands.Cog):
             await self._prepare_song(ctx, song)
 
 
-    
     @commands.command()
-    async def skip(self, ctx:commands.Context):
+    async def skip(self, ctx:commands.Context):  # There is no need to call play_song() again. It will be called internally.
         if self.vc.is_playing:
             self.vc.stop()
-            self.play_song()
             await ctx.channel.send('Skipping current song!')
         else:
             await ctx.channel.send('Dobby can not skip a song if he\'s not playing any...')
@@ -168,10 +170,11 @@ class MusicCog(commands.Cog):
         if self.vc.is_paused:
             self.vc.resume()
             await ctx.channel.send('Resuming current song!')
+        elif self.is_playing:
+            await ctx.channel.send('Dobby is playing a song already!')
         else:
-            await ctx.channel.send('Dobby is playing song already!')
+            await ctx.channel.send('Dobby is not sure what you mean sir... Are you feeling ok?')
         
-
     # Returns a list with all songs in queue into authors text channel.
     @commands.command()
     async def songs(self, ctx:commands.Context):
@@ -182,27 +185,35 @@ class MusicCog(commands.Cog):
             await ctx.channel.send(songs)
         else:
             await ctx.channel.send('Dobby has no songs in queue...')
-
-    @commands.command()
-    async def playList(self, ctx:commands, *args):
-        for i, arg in enumerate(args):
-            continue
-
+            
+    @commands.command(description='Sets Dobby free from the voice channel.')
+    async def giveSock(self, ctx:commands.Context):
+        if self.vc.is_connected():
+            if self.vc.is_playing():  # Stop music if on
+                self.vc.stop()
+            self.queue = None
+            self.dismiss_dobby.cancel()  # Ending dissmis_dobby loop
+            await ctx.channel.send('Dobby is free!!')
+            await self.vc.disconnect()  # Disconnecting voice client
+            
+    # ------- PLAYLIST STUFF
 
 # ------------------------   TASKS   -------------------------- 
 
     # Makes Dobby to wait for 2 minutes, if he is not playing after two  minutes, he will disconnect from channel
-    @tasks.loop(minutes=2)
+    @tasks.loop(minutes=15)
     async def dismiss_dobby(self):
-        """
-        After the first time Dobby recieves a play command, he will start this loop to check if he is still playing a song every 2 minutes.
-        If he realized he is not playing a song anymore, he will leave the Voice channel and say goodbye in the channel where last play command was executed.
-        Once he leaves the channel, the loop will stop. If you summon him again to play, this loop will start again.
-        """
-        if not self.is_playing:
-            await self.channel.send('Dobby seems not to be useful anymore... Dobby is living  voice channel now...')
-            self.dismiss_dobby.stop()
-            await self.vc.disconnect()
+        if (not self.is_playing or len(self.vc.channel.members) == 1) and not self.task_start:
+            await self.channel.send('Dobby seems not to be useful anymore... Dobby is living voice channel now...')
+            await self.vc.disconnect() # Disconnecting voiceclient
+            self.dismiss_dobby.cancel(); # Ending dissmis_dobby loop
+        self.task_start = False;
+        
+        
+        
+class CogBoss:
+    def __init__(self, bot:commands.Bot):
+        self.bot = bot
         
 
 

@@ -1,31 +1,45 @@
 
 import os
+import sys
 
-class PlayListHandler():
-    """
-    PlayListHandler offers methods for Dobby to handle and configure playlist for MusicCog.
+PLAYLIST_FILE = 1
+TASKS_FILE = 2
+
+def denegate_path_traversal(dir, playlist):
+    ''' 
+    Check if variable 'playlist' is safe against path traversal.
+    Absolut path of playlist should be inside 'dir' (chroot directory path)
+    '''
+    path = os.path.abspath(playlist)
+    print(path)
+    return dir == os.path.commonpath((dir, path))
+
+def allow_only_alnum_playlists(playlist:str):
+    '''
+    Only allows alpha numeric characters in playlist name.
+    - Works against path traversal.
+    - Prevents directory creation.
+    - Prevents hidden files & strange filenames.
+    '''
+    if playlist.isalnum(): 
+        return True
     
-    Playlists are saved as files containing a JSON string.
-    This JSON string has the song name as keys, and the song url as values.
-    
-    Example:
-            { 'Brainache - Livia' : '<url>', k2 : v2, ...}
-    
-    This files are stored in the user's home directory, under '~/.dobby/playlists/'.
+    return False
 
-    The playlist name is the same as the filename containing the songs.
-    """
-    def __init__(self):
 
-        # Checks if Dobby is executing in a Windows or Linux (POSIX) machine.
-        if os.name == 'nt': 
-            self.home_path = os.path.expanduser('~')
-        else:
-            pass
-
-    def create_playlist(name):
-        with open('./playlists/',  ) as f:
-            pass
-
-def process_msg(txt):
+def create_file(filetype:int, playlist:str):
     pass
+
+def delete_file(filetype:int, playlist:str):
+    pass
+
+def append_to_file(song:str):
+    pass
+
+def delete_entry_in_file(filetype:int, entry:str):
+    pass
+
+    
+
+
+
