@@ -1,9 +1,10 @@
-import asyncio
+
 import discord
 from discord.ext import commands, tasks
 import requests
 import json
 from youtube_dl import YoutubeDL
+import getopt
 
 class RandomCog(commands.Cog, name='Random wishes'):
     
@@ -187,7 +188,7 @@ class MusicCog(commands.Cog):
             await ctx.channel.send('Dobby has no songs in queue...')
             
     @commands.command(description='Sets Dobby free from the voice channel.')
-    async def giveSock(self, ctx:commands.Context):
+    async def givesock(self, ctx:commands.Context):
         try:
             if self.vc.is_connected():
                 if self.vc.is_playing():  # Stop music if on
@@ -200,13 +201,16 @@ class MusicCog(commands.Cog):
             await ctx.channel.send('I\'m already free, \'Master\'....')
             
     # ------- PLAYLIST STUFF
-
+    @commands.command(description='Command used to handle playlist stuff')
+    async def playlist(self, ctx:commands.Context):
+        pass
+        
 # ------------------------   TASKS   -------------------------- 
 
     # Makes Dobby to wait for 2 minutes, if he is not playing after two  minutes, he will disconnect from channel
     @tasks.loop(minutes=15)
     async def dismiss_dobby(self):
-        if (not self.is_playing or len(self.vc.channel.members) == 1) and not self.task_start:
+        if (not self.vc.is_playing or len(self.vc.channel.members) == 1) and not self.task_start:
             await self.channel.send('Dobby seems not to be useful anymore... Dobby is living voice channel now...')
             await self.vc.disconnect() # Disconnecting voiceclient
             self.dismiss_dobby.cancel(); # Ending dissmis_dobby loop

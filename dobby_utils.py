@@ -5,26 +5,22 @@ import sys
 PLAYLIST_FILE = 1
 TASKS_FILE = 2
 
-def denegate_path_traversal(dir, playlist):
+def is_path_traversal(base_dir, file):
     ''' 
-    Check if variable 'playlist' is safe against path traversal.
+    Check if variable file, referneces a file 
     Absolut path of playlist should be inside 'dir' (chroot directory path)
     '''
-    path = os.path.abspath(playlist)
-    print(path)
-    return dir == os.path.commonpath((dir, path))
+    path = os.path.abspath(file)
+    return base_dir == os.path.commonpath((base_dir, path))
 
-def allow_only_alnum_playlists(playlist:str):
+def file_is_alnum(filename:str):
     '''
     Only allows alpha numeric characters in playlist name.
     - Works against path traversal.
     - Prevents directory creation.
     - Prevents hidden files & strange filenames.
     '''
-    if playlist.isalnum(): 
-        return True
-    
-    return False
+    return filename.isalnum()
 
 
 def create_file(filetype:int, playlist:str):
