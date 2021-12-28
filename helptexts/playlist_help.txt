@@ -1,0 +1,39 @@
+############### Dobby's Playlist Manual ################
+
+The playlist command is used for handling playlist. To start reproducing a playlist
+you will need to use the *play* command (See *play help*).
+
+Usage: playlist <action> <parameters...>
+
+Possible actions:
+    
+    c | create) 
+        Creates a playlist. Syntax: playlist create <playlistname> 
+    
+    d | delete) 
+        Deletes an existing playlist. Syntax: playlist delete <playlistname> 
+    
+    a | add) 
+        Adds a song to an exiting playlist. Syntax: playlist add <playlistname> <songname>
+    
+    r | remove) 
+        Removes a song from an existing playlist. Syntax: playlist remove <playlistname> <songname> 
+    
+    l | list)
+        Lists all playlist or all songs in a playlist. Syntax: playlist list | playlist list <playlistname> 
+
+There are some little shortcuts to make things easier: 
+
+    1. **add** and **remove** actions can accepts multiple song by separating them with ':'. 
+        Ex: playlist add <playlistname> <song1>:<song2>:<song3> 
+
+    2. **remove** action can be used with both position (see "list" action) or songname. 
+
+Note that playlistnames cannot contain spaces. 
+
+Permissions:
+    *reading*: list and playing
+    *writing*: create, delete, add, remove
+
+
+####################################################
