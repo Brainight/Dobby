@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 import requests
 import json
 from youtube_dl import YoutubeDL
-import getopt
+from dobby_utils import Cerberus
 
 class RandomCog(commands.Cog, name='Random wishes'):
     
@@ -30,12 +30,13 @@ class RandomCog(commands.Cog, name='Random wishes'):
 
 class MusicCog(commands.Cog):
     # TODO implements not only _is_playing (True, False), but "Playing", "Paused", "Not Playing"
-    def __init__(self, bot:commands.Bot):
-        self.bot = bot
+    def __init__(self):
 
         # Music Bot Stuff
-        self.queue = []
+        self.queue = []  # This playlist contains the songs for Dobby to play
+        self.play_list_queue = None  # Contains the name of the playlist to play
         self.is_playing = False
+
         # This is only used to write to the last channel that told Dobby to play a song. It is used for Dobby to say good bye after no more songs are in queue.
         self.channel = None
         # Voiceclient (not voice channel)
@@ -142,7 +143,7 @@ class MusicCog(commands.Cog):
             self.is_playing = False
     
     
-    # ---------------------------    COMMANDS   ---------------------------------
+    # ---------------------------    MUSIC COG COMMANDS   ---------------------------------
     @commands.command()
     async def play(self, ctx:commands.Context, *song):
         if await self.handle_play_request(ctx):
@@ -191,23 +192,20 @@ class MusicCog(commands.Cog):
     async def givesock(self, ctx:commands.Context):
         try:
             if self.vc.is_connected():
-                if self.vc.is_playing():  # Stop music if on
+                if self.vc.is_playing():
                     self.vc.stop()
                 self.queue = None
                 self.dismiss_dobby.cancel()  # Ending dissmis_dobby loop
                 await ctx.channel.send('Dobby is free!!')
-                await self.vc.disconnect()  # Disconnecting voice client
+                await self.vc.disconnect()
         except AttributeError:
             await ctx.channel.send('I\'m already free, \'Master\'....')
-            
-    # ------- PLAYLIST STUFF
-    @commands.command(description='Command used to handle playlist stuff')
-    async def playlist(self, ctx:commands.Context):
-        pass
         
-# ------------------------   TASKS   -------------------------- 
 
-    # Makes Dobby to wait for 2 minutes, if he is not playing after two  minutes, he will disconnect from channel
+
+    # -------- TASKS  
+    # Dobby will check every 15 minutes if he is still needed in the voice channel he is.
+    # This method should only be called once every time Dobby get a new instance of a voice client.
     @tasks.loop(minutes=15)
     async def dismiss_dobby(self):
         if (not self.vc.is_playing or len(self.vc.channel.members) == 1) and not self.task_start:
@@ -218,14 +216,67 @@ class MusicCog(commands.Cog):
         
         
         
-class CogBoss:
-    def __init__(self, bot:commands.Bot):
-        self.bot = bot
+class BelongingsCog(commands.Cog):
+    
+     # *****************   P L A Y L I S T   *****************
+    @commands.command(description='Command used to handle playlist stuff')
+    async def playlist(self, ctx:commands.Context, *args):
+        if not Cerberus.allow_playlists:  # Check if playlist are allowed on the server
+            await ctx.channel.send('Dobby will not give you the pleasure of using playlist! Playlists are disabled.')
+            return
         
+
+
+        if len(args) < 2 :  # Wrong or 1 arg Dobby Belonging Command handling
+            if len(args) == 1:
+                if args[0] in ['h', 'help']:  # Print help section
+                    await self._print_playlist_help(ctx)
+                elif args[0] in ['l', 'list']:  # List all playlists
+                    pass
+            else:
+                await ctx.channel.send('Dobby does not know what Master means by "%s"...' % 'playlist ' + " ".join(args))
+                await ctx.channel.send('Check "playlist help" for more information')
+
+        else:  # 2 or more arguments Dobby Beloging Commands handling
+            if args[0] in ['c', 'create']:  # Create playlist
+                pass
+            elif args[0] in ['d', 'delete']:  # Delete playlist
+                pass
+            elif args[0] in ['a', 'add']:  # Add song  to playlist
+                pass
+            elif args[0] in ['r', 'remove']:  # Remove song from playlist
+                pass
+            elif args[0] in ['l', 'list']:  # List songs in playlist (different from above)
+                pass
+
+    async def _print_playlist_help(self, ctx:commands.Context):
+        with open('./helptexts/playlist_help.txt') as f:
+            await ctx.channel.send("".join(f.readlines()))
+        
+
+    # ******************    T A S K S     *********************
+
+
+
+class WisdomCog(commands.Cog):
+    def __init__(self):
+        pass
+
+    @commands.command()
+    async def listroles(self, ctx:commands.Context):
+        roles = ctx.channel.guild.roles
+        txt = '####### SERVER ROLES #######'
+        for role in roles:
+            txt += role.name + '\n'
+
+        await ctx.channel.send(txt)
+
 
 
 def set_up_cogs(bot:commands.bot.Bot):
     bot.add_cog(RandomCog(bot))
-    bot.add_cog(MusicCog(bot))
+    bot.add_cog(MusicCog())
+    bot.add_cog(BelongingsCog())
+    bot.add_cog(WisdomCog())
 
 
