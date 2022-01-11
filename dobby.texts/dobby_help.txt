@@ -1,0 +1,84 @@
+######################   D O B B Y   ######################## 
+This is the help manual for executing dobby discord bot. 
+
+Usage: dobby.py [Options]
+
+    Options: 
+        -h | --help) 
+            Displays this help message.
+
+        -b | --base-dir) 
+            Sets the base directory. Dobby won\'t be allowed to create or read 
+            files outside this directory. 
+
+        -p | --cmd-prefix) 
+            Sets the command prefix. 
+
+        --allow-playlist) 
+            Enables the capacity for Dobby to create playlists.
+            This option will create a directory 'playlist' in the configured 'base directory'
+
+        --allow-tasks) 
+            Enables the capacity for Dobby to create tasks.
+            This option will create a directory 'tasks' in the configured 'base directory' 
+
+        --king-role)
+            Sets the name of the role that with full privileges.
+            Dobby will happily do everything the Server Owner or Members of this group tell him to do.
+
+        --playlist-roles)
+            Sets the roles that are able to handle playlists.
+            More than one role can be specified. 
+
+        --tasks-roles)
+            Sets the roles that are able to handle tasks.
+            More than one role can be specified.
+
+
+Some advanced options:
+
+    **--playlist-roles** and **--tasks-roles** options have the capabilty
+    to specify specific permissions for both playlist and tasks handling.
+    
+    Roles permission can be divided in two:
+        
+        - Reading (r)
+        - Writing (w)
+
+    That means we can specify one of those permissions for every single role. 
+    The syntax to apply these permissions is as follows:
+
+        dobby.py --allow-playlist --playlist-roles '<role1>[:<permission>],<role2>[:<permissions>],...'
+
+    By default if no permission is specified users in those roles will only
+    be assigned the *reading* permission. Hence *--playlist-roles <role>:r*
+    is the same as *--playlist-roles <role>*.
+
+
+About the discord roles:
+
+    A discord server (aka guild) may have multiple roles with the same name, but different ID.
+    Dobby is focused on the roles' names so if two roles have the same name, 
+    members of both roles will get the role privileges. In case of the *--king-role*
+    modifier, establishing this to a repeated name role will cause an error.
+    This means that there is only one possible king role, and one only.
+
+
+Examples:
+
+    dobby.py -b ~/discord -p '!'
+
+
+Note that dobby can be execute with a default configuration. 
+
+The default configuration is: 
+    Command Prefix = '.'    
+    Base Directory = ~ (dobby executing user\'s home directory) 
+    Allow Playlist = False
+    Allow Tasks = False
+    King Role = ''
+    Playlist Role = ()
+    Tasks Role = ()
+
+If base_dir is user home directory, dobby will create/use a subfolder ~/.dobby'
+
