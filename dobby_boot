@@ -1,0 +1,91 @@
+import getopt
+from dobby_utils import Gringotts, Fluffy
+import getopt
+import os
+import sys
+
+CMD_PREFIX = 'CMD_PREFIX'
+BASE_DIR = 'BASE_DIR'
+ALLOW_PLAYLIST = 'ALLOW_PLAYLIST'
+ALLOW_TASKS = 'ALLOW_TASKS'
+ROLES_TASKS = 'ROLES_TS'
+ROLES_PLAYLIST = 'ROLES_PL'
+ROLE_KING = 'KING'
+
+
+# -------------------------------  SETTING UP DOBBY  ----------------------
+def set_up():
+    
+    # The default configuration 
+    config = {
+        CMD_PREFIX : '.',
+        BASE_DIR : '~',
+        ALLOW_PLAYLIST : False,
+        ALLOW_TASKS : False,
+        ROLES_PLAYLIST : None,
+        ROLES_TASKS : None,
+        ROLE_KING : None
+            }
+    
+    long_options =  ['help', 'cmd-prefix=', 'base-dir=', 'allow-playlist', 'allow-tasks', 'king-role', 'playlist-roles', 'tasks-roles']
+    short_options = 'hb:p:'
+    
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], short_options , long_options)
+        for opt, arg in opts:
+            
+            if opt in ('-h', '--help'):  # HELP option
+                print_help()
+                exit(0)
+                
+            if opt in ('-b', '--base_dir'):  #  BASE DIR configuration
+                if arg is not None and arg != '':
+                    config[BASE_DIR] = arg
+                else:
+                    print('Warning: Missing base_dir value.')
+                
+            elif opt in ('-p', '--cmd_prefix'):  # CMD PREFIX configuration
+                if len(arg) == 1 and arg in ['.', ':','!','?','*', '/']:
+                    config[CMD_PREFIX] = arg
+                else:
+                    print(args, 'is not a valid command prefix! Max length is 1. Possible prefixes: ' + ','.join(['.', ':','!','?','*', '/'])[:-1])
+                    exit(1)
+
+            elif opt in ('--allow-playlist'):  # Allowing playlist feature
+                config[ALLOW_PLAYLIST] = True
+
+            elif opt in ('--allow-tasks'):  # Allowing tasks feature
+                config[ALLOW_TASKS] = True
+                
+            elif opt in ('--king-role'):  # Establishing role that has full privileges over Dobby
+                if arg is not None and arg != '':
+                    config[ROLE_KING] = arg
+                else:
+                    print("WARNING: Missing KING_ROLE value")
+            
+            elif opt in ('--playlist-roles'): # Establishing roles for playlist features
+                if arg is not None and arg != '':
+                    config[ROLES_PLAYLIST] = arg
+                else:
+                    print('WARNING: Missing ROLES_PLAYLIST value')
+                    
+            elif opt in ('--tasks-roles'): # Establishing roles for tasks features
+                if arg is not None and arg != '':
+                    config[ROLES_TASKS] = arg
+                else:
+                    print('WARNING: Missing ROLES_TASKS value')
+            else:
+                print('Unknown option \'%s\'' % opt)
+                exit(1)
+                
+    except getopt.GetoptError as e:
+        print("Unknown option \'%s\'")        
+        exit(1)
+        
+    return config
+
+
+def print_help():
+    with open('./helptexts/dobby_help.txt') as f:
+        h = "".join(f.readlines())
+    print(h)
