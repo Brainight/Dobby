@@ -3,10 +3,15 @@
 The playlist command is used for handling playlist. To start reproducing a playlist
 you will need to use the *play* command (See *play help*).
 
-Usage: playlist <action> <parameters...>
+Usage: 
+    (I) playlist <action> <parameters...>
+    (II) playlist <playlistname> [option]
 
-Possible actions:
-    
+Possible actions (I):
+
+    p | play)
+        Plays the specified playlist. Syntax: playlist play <playlistname>
+
     c | create) 
         Creates a playlist. Syntax: playlist create <playlistname> 
     
@@ -29,7 +34,17 @@ There are some little shortcuts to make things easier:
 
     2. **remove** action can be used with both position (see "list" action) or songname. 
 
-Note that playlistnames cannot contain spaces. 
+Playing a playlist (II)
+     
+    a | append)
+        Appends the playlist to the queue of songs. (Default)
+
+    p | push)
+        Deletes all other song in queue and starts playing the playlist. Songs in queue are considered all songs
+        that will be listed when using the "CMD_PREFIX + song" command.
+    
+    
+Note that playlistnames should not contain spaces. 
 
 Permissions:
     *reading*: list and playing

@@ -1,5 +1,7 @@
 ######################   D O B B Y   ######################## 
 This is the help manual for executing dobby discord bot. 
+Dobby can only be part of one server (guild) and will fail to
+execute if he is part of more than one discord server.
 
 Usage: dobby.py [Options]
 
@@ -76,9 +78,11 @@ The default configuration is:
     Base Directory = ~ (dobby executing user\'s home directory) 
     Allow Playlist = False
     Allow Tasks = False
-    King Role = ''
     Playlist Role = ()
     Tasks Role = ()
+    King Role = 
+
+This configuration can be modified as explained in 'dobby.conf.d/fluffy.conf'
 
 If base_dir is user home directory, dobby will create/use a subfolder ~/.dobby'
 
