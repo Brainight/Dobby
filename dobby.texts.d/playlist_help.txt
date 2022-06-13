@@ -11,6 +11,7 @@ Possible actions (I):
 
     p | play)
         Plays the specified playlist. Syntax: playlist play <playlistname>
+        You may also play a song saved in Hogwarts Music Hall. Syntax: playlist play !musichall:<songname>
 
     c | create) 
         Creates a playlist. Syntax: playlist create <playlistname> 
@@ -26,6 +27,7 @@ Possible actions (I):
     
     l | list)
         Lists all playlist or all songs in a playlist. Syntax: playlist list | playlist list <playlistname> 
+        Also, list all songs in Dobby's Music Hall: Syntax: playlist list !musichall
 
 There are some little shortcuts to make things easier: 
 
