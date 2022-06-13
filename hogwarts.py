@@ -3,9 +3,9 @@ from re import I
 import sys
 import os
 
-from fluffy import Fluffy, FluffyConstants
 import dobby_logging as dlog
 import wisdom
+from wisdom import Configurations
 from dobby import Dobby
 
 logger = dlog.getDobbyLogger(__name__)
@@ -16,12 +16,12 @@ class Hogwarts:
     def __init__(self, args:dict):
         self.dobby = None
         logger.info('Creating Hogwarts...')
-        if FluffyConstants.BASE_DIR in args.keys():
-            home_dir = self._create_home_dir(args[FluffyConstants.BASE_DIR])
+        if Configurations.BASE_DIR in args.keys():
+            home_dir = self._create_home_dir(args[Configurations.BASE_DIR])
         else:
             home_dir = self._create_home_dir(Hogwarts._DEF_BASE_DIR)
         
-        args[FluffyConstants.BASE_DIR] = home_dir
+        args[Configurations.BASE_DIR] = home_dir
         self._call_dobby(args)
     
     
@@ -87,44 +87,44 @@ def read_cmd_line_args() -> dict:
                 
             if opt in ('-b', '--base-dir'):  #  BASE DIR configuration
                 if arg is not None and arg != '':
-                    config[FluffyConstants.BASE_DIR] = arg
+                    config[Configurations.BASE_DIR] = arg
                 else:
-                    print('Error: Missing %s value.' % FluffyConstants.BASE_DIR)
+                    print('Error: Missing %s value.' % Configurations.BASE_DIR)
                     exit(1)
                 
             elif opt in ('-p', '--cmd_prefix'):  # CMD PREFIX configuration
                 if arg is not None and arg != '':
-                    config[FluffyConstants.CMD_PREFIX] = arg
+                    config[Configurations.CMD_PREFIX] = arg
                 else:
-                    print('Error: Missing %s value.' % FluffyConstants.CMD_PREFIX)
+                    print('Error: Missing %s value.' % Configurations.CMD_PREFIX)
                     exit(1)
 
             elif opt in ('--allow-playlist'):  # Allowing playlist feature
-                config[FluffyConstants.ALLOW_PLAYLIST] = True
+                config[Configurations.ALLOW_PLAYLIST] = True
 
             elif opt in ('--allow-tasks'):  # Allowing tasks feature
-                config[FluffyConstants.ALLOW_TASKS] = True
+                config[Configurations.ALLOW_TASKS] = True
                 
             elif opt in ('--king-role'):  # Establishing role that has full privileges over Dobby
                 if arg is not None and arg != '':
-                    config[FluffyConstants.ROLE_KING] = arg
+                    config[Configurations.ROLE_KING] = arg
 
                 else:
-                    print('Error: Missing %s value.' % FluffyConstants.ROLE_KING)
+                    print('Error: Missing %s value.' % Configurations.ROLE_KING)
                     exit(1)
             
             elif opt in ('--playlist-roles'): # Establishing roles for playlist features
                 if arg is not None and arg != '':
-                    config[FluffyConstants.ROLES_PLAYLIST] = arg
+                    config[Configurations.ROLES_PLAYLIST] = arg
                 else:
-                    print('Error: Missing %s value.' % FluffyConstants.ROLES_PLAYLIST)
+                    print('Error: Missing %s value.' % Configurations.ROLES_PLAYLIST)
                     exit(1)
                     
             elif opt in ('--tasks-roles'): # Establishing roles for tasks features
                 if arg is not None and arg != '':
-                    config[FluffyConstants.ROLES_TASKS] = arg
+                    config[Configurations.ROLES_TASKS] = arg
                 else:
-                    print('Error: Missing %s value.' % FluffyConstants.ROLES_TASKS)
+                    print('Error: Missing %s value.' % Configurations.ROLES_TASKS)
                     exit(1)
             else:
                 print('Unknown option \'%s\'' % opt)

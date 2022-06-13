@@ -3,6 +3,7 @@ from discord.ext import commands
 import dobby_logging
 from youtube_dl import YoutubeDL
 import discord
+import wisdom
 
 logger = dobby_logging.getDobbyLogger(__name__)
 
@@ -47,14 +48,14 @@ class DobbyVoice():
         
     # Finds url for video given a youtube search string
     @staticmethod
-    def find_song(song):
+    def find_song(song:str):
         with YoutubeDL(_YDL_options) as yt:
             try:
                 # Searching for matches of string as a youtube search.
                 data = yt.extract_info(f'ytsearch:{song}', download=False)
             except:
                 return False
-        return {'title' : data['entries'][0]['title'], 'src' : data['entries'][0]['formats'][0]['url']}
+        return wisdom.build_simple_song_data_entry(data['entries'][0]['title'], data['entries'][0]['formats'][0]['url'], wisdom.MusicSongTypes.YOUTUBE)
 
 
 # Prepares Dobby for playing music after commands 'play' is executed
@@ -95,19 +96,17 @@ class DobbyVoice():
 
 
     # Add song to queue 
-    async def prepare_song(self, ctx:commands.Context, song):
+    async def prepare_song(self, ctx:commands.Context, song_data:dict):
         """
         Gets source for song. If queue has no songs, it adds it to queue and calls play_song method. If queue has songs, it only adds it to queue.
         """
-        song_query = " ".join(song)
-        song_data = self.find_song(song_query)
         
         # If data for the supplied is retrieved succesfully (else -> song_data = False)
         if song_data:
             if self.queue is None:
                 self.queue = []
             
-            song_data['type'] = 'uniq'
+            #song_data['type'] = 'uniq'
             self.queue.append(song_data)
 
             if len(self.queue) > 1 or self.is_playing:
@@ -137,16 +136,18 @@ class DobbyVoice():
             self.is_playing = True 
             song = self.queue.pop(0)
             print("Playing song: ", song['title'])
+            print("Source: " + song['src'])
             try:
-                self.vc.play(discord.FFmpegPCMAudio(song['src'], **self.ffmpeg_options), after=lambda e: self.play_song(ctx)) 
+                if(song[wisdom.GringottsMetadata.META_SONG_TYPE] == wisdom.MusicSongTypes.LOCAL.value):
+                    self.vc.play(discord.FFmpegPCMAudio(song['src']), after=lambda e: self.play_song(ctx)) 
+                else:
+                    self.vc.play(discord.FFmpegPCMAudio(song['src'], **self.ffmpeg_options), after=lambda e: self.play_song(ctx)) 
             except Exception as e:
                 if retry:
                     logger.error('Retry on \'%s\' was unsuccessfull, ignoring song.')
-                    ctx.channel.send('Retry on song \'%s\', Dobby will skip the song!', song['title'])
                 else:
-                    logger.error('Cannot reproduce song: \'%s\' due to:\n%s', song['title'], e.msg)
-                    logger.info('Retrying to play \'%s\'...', song['title'])
-                    ctx.channel.send('An error ocurred trying to play \'%s\'... Dobby will retry', song['title'])
+                    logger.error('Cannot reproduce song: \'%s\' due to:\n%s', song['title'], e.args)
+                    logger.info('Retrying to play \'%s\'...', song['title']) 
                     self.queue.insert(0, song)
                     self.play(ctx, retry=True)
         else:

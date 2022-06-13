@@ -3,6 +3,7 @@ import requests
 import json
 import typing
 import dobby_logging
+from wisdom import MusicSongTypes
 
 if typing.TYPE_CHECKING:
     from fluffy import FluffyMusic
@@ -57,7 +58,8 @@ class MusicCog(commands.Cog):
                 if not self.dismiss_dobby.is_running():
                     self.dismiss_dobby.start()
                     self.task_start = True
-                await self.music.prepare_song(ctx, song)
+                    song_data = DobbyVoice.find_song(song)
+                await self.music.prepare_song(ctx, song_data)
         else:
             await ctx.channel.send('Dobby is already in a channel, and you are not there. I won\'t do what you want unless you\'re with us...') 
 
@@ -107,8 +109,12 @@ class MusicCog(commands.Cog):
                     command = 'help'
                 else:
                     command = args[0]
-                    
-                exit_code, msg = self.fluffy_music.execute(ctx, ctx.author, command, *args)
+                    if len(args) > 1:
+                        args = args[1:]
+                    else:
+                        args = []
+                        
+                await self.fluffy_music.execute(ctx, ctx.author, command, args)
                 
             else:
                 await ctx.channel.send('Dobby doesn\'t recognize this type of playlist magic...')
@@ -147,12 +153,12 @@ class MusicCog(commands.Cog):
 
     # Dobby will check every 15 minutes if he is still needed in the voice channel he is.
     # This method should only be called once every time Dobby get a new instance of a voice client.
-    @tasks.loop(minutes=15)
+    @tasks.loop(minutes=60)
     async def dismiss_dobby(self):
         if (not self.music.vc.is_playing or len(self.music.vc.channel.members) == 1) and not self.task_start:
-            await self.music.channel.send('Dobby seems not to be useful anymore... Dobby is living voice channel now...')
-            await self.music.vc.disconnect() # Disconnecting voiceclient
-            self.dismiss_dobby.cancel(); # Ending dissmis_dobby loop
+             await self.music.channel.send('Dobby seems not to be useful anymore... Dobby is living voice channel now...')
+             await self.music.vc.disconnect() # Disconnecting voiceclient
+             self.dismiss_dobby.cancel(); # Ending dissmis_dobby loop
         self.task_start = False
     
     # ******************    T A S K S     *********************
