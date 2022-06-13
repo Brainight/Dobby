@@ -3,11 +3,11 @@ import requests
 import json
 import typing
 import dobby_logging
-from wisdom import MusicSongTypes
+from dobbyvoice import DobbyVoice
 
 if typing.TYPE_CHECKING:
     from fluffy import FluffyMusic
-    from dobbyvoice import DobbyVoice
+
     
 class RandomCog(commands.Cog, name='Random wishes'):
     
